@@ -26,7 +26,6 @@ def kyc_register(ctx, args):
         for address in args:
 
             if len(address) == 20:
-
                 kyc_storage_key = concat(KYC_KEY, address)
                 Put(ctx, kyc_storage_key, True)
 
@@ -106,7 +105,6 @@ def can_exchange(ctx, attachments, verify_only):
 
     if attachments[2] == 0:
         return False
-
 
     if not get_kyc_status(ctx, attachments[1]):
         return False

@@ -1,14 +1,15 @@
+from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
+from boa.interop.Neo.Storage import *
+from boa.interop.Neo.TriggerType import Application, Verification
 
 from nxa.crowdsale import *
 from nxa.nep5 import *
 from nxa.team import *
-from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
-from boa.interop.Neo.TriggerType import Application, Verification
-from boa.interop.Neo.Storage import *
 
 ctx = GetContext()
-NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
-TEAM_METHODS = ['team_transfer_from', 'team_approve', 'team_allowance','team_reserve','company_transfer_from','company_approve','company_allowance','company_reserve']
+NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve','allowance']
+TEAM_METHODS = ['team_transfer_from', 'team_approve', 'team_allowance', 'team_reserve', 'company_transfer_from','company_approve', 'company_allowance', 'company_reserve']
+
 
 def Main(operation, args):
     """

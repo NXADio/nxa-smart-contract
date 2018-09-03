@@ -5,12 +5,11 @@ from boa.builtins import concat
 
 from nxa.token import *
 
-
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
 
-def handle_nep51(ctx, operation, args):
 
+def handle_nep51(ctx, operation, args):
     if operation == 'name':
         return TOKEN_NAME
 
@@ -47,7 +46,6 @@ def handle_nep51(ctx, operation, args):
 
 
 def do_transfer(ctx, t_from, t_to, amount):
-
     if amount <= 0:
         return False
 
@@ -63,7 +61,7 @@ def do_transfer(ctx, t_from, t_to, amount):
         from_val = Get(ctx, t_from)
 
         if CheckWitness(TOKEN_OWNER):
-            team_reserve = Get(ctx,TEAM_RESERVE_KEY)
+            team_reserve = Get(ctx, TEAM_RESERVE_KEY)
             company_reserve = Get(ctx, COMPANY_RESERVE_KEY)
             from_val = from_val - team_reserve
             from_val = from_val - company_reserve
@@ -106,7 +104,6 @@ def do_transfer(ctx, t_from, t_to, amount):
 
 
 def do_transfer_from(ctx, t_from, t_to, amount):
-
     if amount <= 0:
         return False
 
@@ -124,17 +121,17 @@ def do_transfer_from(ctx, t_from, t_to, amount):
     from_balance = Get(ctx, t_from)
     new_from_balance = from_balance - amount
 
-    #Token owner logic to not touch the team funding and the company reserve
-    #When making transfers
+    # Token owner logic to not touch the team funding and the company reserve
+    # When making transfers
     if CheckWitness(TOKEN_OWNER):
-        team_reserve = Get(ctx,TEAM_RESERVE_KEY)
+        team_reserve = Get(ctx, TEAM_RESERVE_KEY)
         company_reserve = Get(ctx, COMPANY_RESERVE_KEY)
         from_balance = from_balance - team_reserve
         from_balance = from_balance - company_reserve
 
     if from_balance < amount:
-            print("Insufficient tokens in from balance")
-            return False
+        print("Insufficient tokens in from balance")
+        return False
 
     to_balance = Get(ctx, t_to)
 
@@ -160,7 +157,6 @@ def do_transfer_from(ctx, t_from, t_to, amount):
 
 
 def do_approve(ctx, t_owner, t_spender, amount):
-
     if len(t_spender) != 20:
         return False
 
@@ -170,18 +166,17 @@ def do_approve(ctx, t_owner, t_spender, amount):
     if amount < 0:
         return False
 
-    #Token owner logic to not touch the team funding and the company reserve
-    #When making transfers
+    # Token owner logic to not touch the team funding and the company reserve
+    # When making transfers
     from_balance = Get(ctx, t_owner)
 
     if CheckWitness(TOKEN_OWNER):
-        team_reserve = Get(ctx,TEAM_RESERVE_KEY)
+        team_reserve = Get(ctx, TEAM_RESERVE_KEY)
         company_reserve = Get(ctx, COMPANY_RESERVE_KEY)
         from_balance = from_balance - team_reserve
         from_balance = from_balance - company_reserve
 
-
-    if from_balance>= amount:
+    if from_balance >= amount:
 
         approval_key = concat(t_owner, t_spender)
 
@@ -198,5 +193,4 @@ def do_approve(ctx, t_owner, t_spender, amount):
 
 
 def do_allowance(ctx, t_owner, t_spender):
-
     return Get(ctx, concat(t_owner, t_spender))

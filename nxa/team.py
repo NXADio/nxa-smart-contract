@@ -4,7 +4,6 @@ from boa.interop.Neo.Blockchain import GetHeight
 from nxa.token import *
 from boa.interop.Neo.Action import RegisterAction
 
-
 MONTH_KEY = "month"
 
 first_year_key = "1year"
@@ -16,10 +15,11 @@ deposit_key = "deposit_height"
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
 
+
 def handle_team_operations(ctx, operation, args):
     if operation == 'team_transfer_from':
         if len(args) == 4:
-            return team_transfer_from(ctx, args[0], args[1], args[2],args[3])
+            return team_transfer_from(ctx, args[0], args[1], args[2], args[3])
 
     elif operation == 'team_approve':
         if len(args) == 3:
@@ -65,7 +65,6 @@ def team_transfer_from(ctx, t_from, t_to, amount, month):
         print("Insufficient funds approved")
         return False
 
-
     from_balance = Get(ctx, t_from)
 
     deposit_address_key = concat(available_key, deposit_key)
@@ -74,7 +73,7 @@ def team_transfer_from(ctx, t_from, t_to, amount, month):
 
     current_height = GetHeight()
 
-    if((current_height - deposit_height) < YEAR):
+    if ((current_height - deposit_height) < YEAR):
         print("At least 1 year must pass to withdraw funds")
         return False
 
@@ -88,30 +87,28 @@ def team_transfer_from(ctx, t_from, t_to, amount, month):
         Put(ctx, first_year_address_key, True)
         return perform_transfer(ctx, t_to, t_from, from_balance, available_to_to_addr, available_key, first_year_amount)
 
-
-    if((current_height - deposit_height) < 2*YEAR):
+    if ((current_height - deposit_height) < 2 * YEAR):
         print("At least 2 years must pass to withdraw funds")
         return False
-
 
     second_year_address_key = concat(available_key, second_year_key)
     second_year_transfer = Get(ctx, second_year_address_key)
 
     if not second_year_transfer:
-        second_year_amount = (30 * available_amount )/ 100
+        second_year_amount = (30 * available_amount) / 100
         Put(ctx, second_year_address_key, True)
 
         return perform_transfer(ctx, t_to, t_from, from_balance, available_to_to_addr, available_key, second_year_amount)
 
 
-    if((current_height - deposit_height) < 3 *YEAR):
+    if ((current_height - deposit_height) < 3 * YEAR):
         print("At least 3 year must pass to withdraw the whole funds")
         return False
 
     return perform_transfer(ctx, t_to, t_from, from_balance, available_to_to_addr, available_key, amount)
 
-def team_approve(ctx, t_owner, t_spender, amount):
 
+def team_approve(ctx, t_owner, t_spender, amount):
     if len(t_spender) != 20:
         return False
 
@@ -122,8 +119,8 @@ def team_approve(ctx, t_owner, t_spender, amount):
         return False
 
     height = GetHeight()
-    employee_month = concat(t_spender,NEXT_MONTH_SALARY)
-    month = Get(ctx,employee_month)
+    employee_month = concat(t_spender, NEXT_MONTH_SALARY)
+    month = Get(ctx, employee_month)
     if month == b'':
         month = 1
     else:
@@ -157,7 +154,7 @@ def team_approve(ctx, t_owner, t_spender, amount):
     return False
 
 
-def team_allowance(ctx, t_owner, t_spender,month):
+def team_allowance(ctx, t_owner, t_spender, month):
     first_part = concat(t_owner, t_spender)
     approval_key = concat(first_part, month)
     return Get(ctx, approval_key)
@@ -190,13 +187,14 @@ def perform_transfer(ctx, t_to, t_from, from_balance, available_to_to_addr, avai
 
     return True
 
+
 def team_reserve(ctx):
     return Get(ctx, TEAM_RESERVE_KEY)
+
 
 #####
 
 def company_transfer_from(ctx, t_from, t_to):
-
     if not CheckWitness(TOKEN_OWNER):
         return False
 
@@ -213,8 +211,8 @@ def company_transfer_from(ctx, t_from, t_to):
         return False
 
     deposit_address_key = concat(available_key, deposit_key)
-    height = Get(ctx,deposit_address_key)
-    current_height =GetHeight()
+    height = Get(ctx, deposit_address_key)
+    current_height = GetHeight()
 
     if (current_height - height < MONTH):
         print("A month must pass to send the funds")
@@ -242,7 +240,6 @@ def company_transfer_from(ctx, t_from, t_to):
     Put(ctx, COMPANY_RESERVE_KEY, new_company_reserve)
     Put(ctx, deposit_address_key, current_height)
 
-
     print("transfer complete")
     OnTransfer(t_from, t_to, MONTHLY_ALLOWANCE)
 
@@ -250,7 +247,6 @@ def company_transfer_from(ctx, t_from, t_to):
 
 
 def company_approve(ctx, t_owner, t_spender):
-
     if not CheckWitness(TOKEN_OWNER):
         print("Must be token owner to approve funds")
         return False
@@ -285,6 +281,7 @@ def company_allowance(ctx, t_owner, t_spender):
     approval_key = concat(approval_first_part, MONTH_KEY)
 
     return Get(ctx, approval_key)
+
 
 def company_reserve(ctx):
     return Get(ctx, COMPANY_RESERVE_KEY)
